@@ -1,28 +1,20 @@
-require 'io/console'
+require 'tk'
 
-def binary_keyboard
-    puts "paina näppäintä, tai lopeta ctr+c"
+root = TkRoot.new {title "Binary Keyboard"}
 
-    logged_keys= []
-
-    STDIN.raw do |stdin|
-        loop do 
-            char = stdin.getc
-            break if char == "\u0003"
-
-            ascii_value=char.ord
-            binary_string = ascii_value.to_s(2).rjust(8,'0')
-
-            puts "Näppäin: #{char.inspect} -> binääri: #{binary_string}"
-
-            logged_keys << binary_string
-        end
-    end
-    logged_keys
+log_text = TkText.new(root) do
+    width 50
+    height 10
+    pack
 end
 
-logged = binary_keyboard
+Tk.bind(root, "KeyPress") do |event|
+    key = event.char
+    unless key.empty?
+        ascii = key.ord
+        binary = ascii.to_s(2).rjust(8, '0')
+        log_text.insert("end", "Näppäin: #{key.inspect} -> binääri : #{binary}\n")
+    end
+end
 
-puts "Logatut näppäimet binäärissä"
-puts logged.join(" ")
-
+Tk.mainloop
